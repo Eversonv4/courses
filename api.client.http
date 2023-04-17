@@ -1,0 +1,26 @@
+### Get all courses
+GET http://localhost:3000/courses
+
+### Get one course
+GET http://localhost:3000/courses/2
+
+### Create a course
+POST http://localhost:3000/courses
+Content-Type: application/json
+
+{
+  "name": "ReactJS",
+  "description": "the complete course of NodeJS",
+  "tags": ["nodejs", "javascript"]
+}
+
+### Update data
+PATCH http://localhost:3000/courses/2
+Content-Type: application/json
+
+{
+  "name": "NextJS"
+}
+
+### Delete course
+DELETE http://localhost:3000/courses/2
