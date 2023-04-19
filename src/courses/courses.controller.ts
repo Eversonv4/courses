@@ -10,7 +10,8 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
-import { CourseDto } from './dtos/course.dto';
+import { CreateCourseDto } from './dtos/create-course.dto';
+import { UpdateCourseDto } from './dtos/update-course.dto';
 
 @Controller('courses')
 export class CoursesController {
@@ -27,7 +28,7 @@ export class CoursesController {
   }
 
   @Post()
-  create(@Body() body: CourseDto) {
+  create(@Body() body: CreateCourseDto) {
     const { name, description, tags } = body;
     if (!name || !description || !tags) {
       const errorMessage = {
@@ -43,14 +44,17 @@ export class CoursesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() body) {
-    return (
-      'Updated property ' + JSON.stringify(body) + ' to course with id: ' + id
-    );
+  update(@Param('id') id: string, @Body() body: UpdateCourseDto) {
+    const { name, description, tags } = body;
+    return this.coursesService.updateCourse(Number(id), {
+      name,
+      description,
+      tags,
+    });
   }
 
   @Delete(':id')
   deleteCourse(@Param('id') id: string) {
-    return 'deleted course #' + id;
+    return this.coursesService.deleteCourse(Number(id));
   }
 }

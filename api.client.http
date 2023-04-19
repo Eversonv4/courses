@@ -9,18 +9,20 @@ POST http://localhost:3000/courses
 Content-Type: application/json
 
 {
-  "name": "ReactJS",
-  "description": "the complete course of NodeJS",
-  "tags": ["nodejs", "javascript"]
+  "name": "Linux",
+  "description": "the bible of linux",
+  "tags": ["ubuntu", "kernel"]
 }
 
 ### Update data
-PATCH http://localhost:3000/courses/2
+PATCH http://localhost:3000/courses/68611
 Content-Type: application/json
 
 {
-  "name": "NextJS"
+  "name": "Python",
+  "description": "the complete guide of python and django",
+  "tags": ["machine learning", "data science", "artifitial intelligence"]
 }
 
 ### Delete course
-DELETE http://localhost:3000/courses/2
+DELETE http://localhost:3000/courses/68611
