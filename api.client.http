@@ -2,7 +2,7 @@
 GET http://localhost:3000/courses
 
 ### Get one course
-GET http://localhost:3000/courses/2
+GET http://localhost:3000/courses/c41e769f-431e-4a1a-bb4e-04329a5c3547
 
 ### Create a course
 POST http://localhost:3000/courses

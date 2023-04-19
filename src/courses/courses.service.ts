@@ -5,11 +5,14 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { CourseEntity } from './course.entity';
-import { CreateCourseDto } from './dtos/create-course.dto';
+import { CreateCourseDtoType } from './dtos/create-couse.type';
 import { UpdateCourseDto } from './dtos/update-course.dto';
+import { PrismaService } from 'src/database/PrismaService';
 
 @Injectable()
 export class CoursesService {
+  constructor(private prisma: PrismaService) {}
+
   private courses: CourseEntity[] = [
     {
       id: 1,
@@ -19,47 +22,60 @@ export class CoursesService {
     },
   ];
 
-  findAll() {
-    return this.courses;
+  async findAll() {
+    return await this.prisma.course.findMany();
   }
 
-  findOne(courseId: number) {
-    const course = this.courses.filter(
-      (course) => course.id === Number(courseId),
-    );
-    if (course.length === 0) {
+  async findOne(id: string) {
+    const foundCourse = await this.prisma.course.findFirst({ where: { id } });
+
+    if (!foundCourse) {
       throw new BadRequestException('course not found');
     }
-    return course;
+
+    return foundCourse;
   }
 
-  createCourse({ name, description, tags }: CreateCourseDto) {
-    const id = Math.floor(Math.random() * 999999);
-    const newCourse = { id, name, description, tags };
-    this.courses.push(newCourse);
-    return newCourse;
-  }
-
-  updateCourse(courseId: number, { name, description, tags }: UpdateCourseDto) {
-    let updatedCourse = {};
-
-    this.courses.find((course, index) => {
-      if (course.id === Number(courseId)) {
-        const newUpdatedCourse = {
-          ...course,
-          name: name ? name : course.name,
-          description: description ? description : course.description,
-          tags: tags ? tags : course.tags,
-        };
-
-        this.courses[index] = newUpdatedCourse;
-        updatedCourse = newUpdatedCourse;
-      }
+  async createCourse(courseData: CreateCourseDtoType) {
+    const courseExists = await this.prisma.course.findFirst({
+      where: {
+        name: courseData.name,
+      },
     });
 
-    if (!updatedCourse) {
-      throw new HttpException('course not found', HttpStatus.NOT_FOUND);
+    if (courseExists) {
+      throw new BadRequestException('course already exists');
     }
+
+    const course = await this.prisma.course.create({
+      data: courseData,
+    });
+
+    // return newCourse;
+  }
+
+  async updateCourse(
+    courseId: string,
+    { name, description, tags }: UpdateCourseDto,
+  ) {
+    const courseExists = await this.prisma.course.findUnique({
+      where: { id: courseId },
+    });
+
+    if (!courseExists) {
+      throw new BadRequestException('Course does not exists!');
+    }
+
+    const updatedCourse = await this.prisma.course.update({
+      data: {
+        ...(name && { name }),
+        ...(description && { description }),
+        ...(tags && { tags }),
+      },
+      where: {
+        id: courseId,
+      },
+    });
 
     return updatedCourse;
   }

@@ -7,13 +7,13 @@ import { IsString, IsOptional } from 'class-validator';
 export class UpdateCourseDto {
   @IsString()
   @IsOptional()
-  name?: string;
+  name: string;
 
   @IsString()
   @IsOptional()
-  description?: string;
+  description: string;
 
   @IsString({ each: true })
   @IsOptional()
-  tags?: string[];
+  tags: string[];
 }
