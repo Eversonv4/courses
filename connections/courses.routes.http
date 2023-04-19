@@ -1,7 +1,7 @@
-### Get all courses
+### List all courses
 GET http://localhost:3000/courses
 
-### Get one course
+### Filter one course
 GET http://localhost:3000/courses/c41e769f-431e-4a1a-bb4e-04329a5c3547
 
 ### Create a course
@@ -11,7 +11,6 @@ Content-Type: application/json
 {
   "name": "Linux",
   "description": "the bible of linux",
-  "tags": ["ubuntu", "kernel"]
 }
 
 ### Update data
@@ -21,7 +20,6 @@ Content-Type: application/json
 {
   "name": "Python",
   "description": "the complete guide of python and django",
-  "tags": ["machine learning", "data science", "artifitial intelligence"]
 }
 
 ### Delete course

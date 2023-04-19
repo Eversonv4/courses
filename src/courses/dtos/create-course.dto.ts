@@ -1,4 +1,4 @@
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsUUID } from 'class-validator';
 
 export class CreateCourseDto {
   @IsString()
@@ -6,7 +6,4 @@ export class CreateCourseDto {
 
   @IsString()
   description: string;
-
-  @IsString({ each: true })
-  tags: string[];
 }

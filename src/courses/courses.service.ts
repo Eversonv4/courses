@@ -5,9 +5,9 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { CourseEntity } from './course.entity';
-import { CreateCourseDtoType } from './dtos/create-couse.type';
 import { UpdateCourseDto } from './dtos/update-course.dto';
 import { PrismaService } from 'src/database/PrismaService';
+import { CreateCourseDto } from './dtos/create-course.dto';
 
 @Injectable()
 export class CoursesService {
@@ -23,11 +23,15 @@ export class CoursesService {
   ];
 
   async findAll() {
-    return await this.prisma.course.findMany();
+    return await this.prisma.course.findMany({ include: { tags: true } });
   }
 
   async findOne(id: string) {
-    const foundCourse = await this.prisma.course.findFirst({ where: { id } });
+    // const foundCourse = await this.prisma.tags.findFirst({ where: { id : 1 } });
+    const foundCourse = await this.prisma.course.findFirst({
+      where: { id },
+      include: { tags: true },
+    });
 
     if (!foundCourse) {
       throw new BadRequestException('course not found');
@@ -36,7 +40,7 @@ export class CoursesService {
     return foundCourse;
   }
 
-  async createCourse(courseData: CreateCourseDtoType) {
+  async createCourse(courseData: CreateCourseDto) {
     const courseExists = await this.prisma.course.findFirst({
       where: {
         name: courseData.name,
@@ -51,13 +55,10 @@ export class CoursesService {
       data: courseData,
     });
 
-    // return newCourse;
+    return course;
   }
 
-  async updateCourse(
-    courseId: string,
-    { name, description, tags }: UpdateCourseDto,
-  ) {
+  async updateCourse(courseId: string, { name, description }: UpdateCourseDto) {
     const courseExists = await this.prisma.course.findUnique({
       where: { id: courseId },
     });
@@ -70,7 +71,6 @@ export class CoursesService {
       data: {
         ...(name && { name }),
         ...(description && { description }),
-        ...(tags && { tags }),
       },
       where: {
         id: courseId,

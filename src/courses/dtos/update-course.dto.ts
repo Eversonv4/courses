@@ -12,8 +12,4 @@ export class UpdateCourseDto {
   @IsString()
   @IsOptional()
   description: string;
-
-  @IsString({ each: true })
-  @IsOptional()
-  tags: string[];
 }

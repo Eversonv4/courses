@@ -29,19 +29,18 @@ export class CoursesController {
 
   @Post()
   async create(@Body() body: CreateCourseDto) {
-    const { name, description, tags } = body;
+    const { name, description } = body;
 
-    return await this.coursesService.createCourse({ name, description, tags });
+    return await this.coursesService.createCourse({ name, description });
   }
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() body: UpdateCourseDto) {
-    const { name, description, tags } = body;
+    const { name, description } = body;
 
     return await this.coursesService.updateCourse(id, {
       name,
       description,
-      tags,
     });
   }
 

@@ -11,10 +11,19 @@ datasource db {
 }
 
 model Course {
-  id  String @id @default(uuid())
-  name String
+  id          String @id @default(uuid())
+  name        String @unique
   description String
-  tags String[] 
+  tags        Tags[]
 
   @@map("courses")
+}
+
+model Tags {
+  id       Int    @id @default(autoincrement())
+  name     String
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id])
+
+  @@map("tags")
 }
