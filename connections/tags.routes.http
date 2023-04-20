@@ -1,2 +1,17 @@
 ### List all tags
 GET http://localhost:3000/tags
+
+### Get one tag
+GET http://localhost:3000/tags/3
+
+### Create a tag
+POST http://localhost:3000/tags
+Content-Type: application/json
+
+{
+	"name": "NodeJS",
+	"courseId": "b4099d8a-c9bb-4b08-a800-08e58ca8629a"
+}
+
+### Update tag name
+PATCH http://localhost:3000/tags/2

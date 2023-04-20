@@ -17,7 +17,7 @@ import { UpdateCourseDto } from './dtos/update-course.dto';
 export class CoursesController {
   constructor(private coursesService: CoursesService) {}
 
-  @Get('')
+  @Get()
   async findAll() {
     return await this.coursesService.findAll();
   }

@@ -2,10 +2,10 @@
 GET http://localhost:3000/courses
 
 ### Filter one course
-GET http://localhost:3000/courses/c41e769f-431e-4a1a-bb4e-04329a5c3547
+GET http://localhost:3000/courses/b4099d8a-c9bb-4b08-a800-08e58ca8629a
 
 ### Create a course
-POST http://localhost:3000/courses
+POST http://localhost:3000/courses HTTP/1.1
 Content-Type: application/json
 
 {
@@ -14,7 +14,7 @@ Content-Type: application/json
 }
 
 ### Update data
-PATCH http://localhost:3000/courses/68611
+PATCH http://localhost:3000/courses/b4099d8a-c9bb-4b08-a800-08e58ca8629a
 Content-Type: application/json
 
 {
