@@ -1,0 +1,260 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [citext]
+}
+
+model User {
+  id               String             @id @default(uuid())
+  email            String             @unique @db.Citext
+  cpf              String?            @unique
+  photo            String?
+  name             String
+  phone            String?            @unique
+  role             Role               @default(user)
+  password         String
+  refreshToken     String?            @unique
+  isActive         Boolean            @default(true)
+  accountVerified  Boolean            @default(false)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  userAcessCode    UserAcessCode[]
+  address          Address[]
+  company          Company?
+  cards            UserCard[]
+  Payment          Payment[]
+  DeliveryUserCard DeliveryUserCard[]
+}
+
+model Address {
+  id           String   @id @default(uuid())
+  userId       String?
+  companyId    String?
+  address      String
+  neighborhood String
+  number       String?
+  city         String
+  state        String
+  zipCode      String
+  lat          Float    @default(0)
+  lon          Float    @default(0)
+  complement   String?  @default("")
+  country      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company      Company?
+}
+
+model UserAcessCode {
+  id         String      @id @default(uuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessCode String      @unique
+  actionType ActionType?
+  expiresIn  DateTime
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime?   @updatedAt
+}
+
+model Company {
+  id               String             @id @default(uuid())
+  addressId        String             @unique
+  userId           String             @unique
+  tradingName      String
+  photo            String?
+  companyPhone     String             @default("")
+  whatsAppPhone    String?
+  companyName      String
+  minMeanValue     Float              @default(0)
+  maxMeanValue     Float              @default(0)
+  description      String?
+  hasDelivery      Boolean            @default(false)
+  cnpj             String             @unique
+  email            String             @unique @db.Citext
+  status           CompanyStatus      @default(pendente)
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address          Address            @relation(fields: [addressId], references: [id], onDelete: Cascade)
+  categories       Category[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime?          @updatedAt
+  cards            Card[]
+  subscriptions    Subscription[]
+  DeliveryUserCard DeliveryUserCard[]
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique @db.Citext
+  description String
+  companies   Company[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+}
+
+model Plan {
+  id             String         @id @default(uuid())
+  name           String         @unique @db.Citext
+  description    String
+  monthlyValue   Int            @default(30)
+  annualValue    Int            @default(360)
+  monthlyPriceId String?
+  annualPriceId  String?
+  numberOfCards  Int
+  status         PlanStatus     @default(ativo)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime?      @updatedAt
+  subscriptions  Subscription[]
+}
+
+model Card {
+  id               String             @id @default(uuid())
+  companyId        String
+  name             String
+  photo            String?
+  backgroundColor  String             @default("#FFFFFF")
+  fontColor        String             @default("#02314D")
+  rules            String
+  rewards          String
+  points           Int
+  validityInDays   Int                @default(30)
+  status           CardStatus         @default(active)
+  company          Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime?          @updatedAt
+  users            UserCard[]
+  DeliveryUserCard DeliveryUserCard[]
+}
+
+model UserCard {
+  code          String         @id
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardId        String
+  card          Card           @relation(fields: [cardId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  currentPoints Int            @default(1)
+  status        UserCardStatus @default(claiming)
+  validity      DateTime       @db.Date
+  claimedDate   DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime?      @updatedAt
+}
+
+model DeliveryUserCard {
+  code      String                 @id
+  userId    String?
+  user      User?                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardId    String
+  card      Card                   @relation(fields: [cardId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  companyId String
+  company   Company                @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  status    DeliveryUserCardStatus @default(available)
+  validity  DateTime               @db.Date
+  createdAt DateTime               @default(now())
+  updatedAt DateTime?              @updatedAt
+}
+
+model Payment {
+  id        String        @id @default(uuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  priceId   String
+  planId    String
+  amount    Float
+  sessionId String?
+  status    PaymentStatus
+  createdAt DateTime      @default(now())
+  updatedAt DateTime?     @updatedAt
+}
+
+model Subscription {
+  id          String                 @id @default(uuid())
+  companyId   String
+  company     Company                @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  planId      String
+  plan        Plan                   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  isTrial     Boolean
+  periodEnd   DateTime?              @db.Date
+  isActive    Boolean
+  waitingEnd  Boolean?               @default(false)
+  recurrence  SubscriptionRecurrence @default(monthly)
+  stripeSubId String?
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime?              @updatedAt
+}
+
+model StripeEventLogs {
+  id        String   @id @default(uuid())
+  event     Json
+  createdAt DateTime @default(now())
+}
+
+enum ActionType {
+  forgotPassword
+  createUser
+  updateEmail
+  updatePhone
+}
+
+enum CompanyStatus {
+  pendente
+  ativa
+  negada
+  inadimplente
+  inativa
+}
+
+enum CardStatus {
+  active
+  inactive
+}
+
+enum UserCardStatus {
+  claimable
+  claimed
+  canceled
+  claiming
+  requestedClaim
+}
+
+enum Role {
+  user
+  staff
+  admin_full
+  admin_finance
+  admin_establishment_approver
+  admin_customer_register
+}
+
+enum PlanStatus {
+  ativo
+  preInativo
+  inativo
+}
+
+enum PaymentStatus {
+  open
+  paid
+  expired
+  unpaid
+}
+
+enum SubscriptionRecurrence {
+  monthly
+  annual
+  custom
+}
+
+enum DeliveryUserCardStatus {
+  expired
+  available
+  taken
+}

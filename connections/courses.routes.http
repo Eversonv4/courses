@@ -10,16 +10,25 @@ Content-Type: application/json
 
 {
   "name": "Linux",
-  "description": "the bible of linux",
+  "description": "the bible of linux"
 }
 
-### Update data
-PATCH http://localhost:3000/courses/b4099d8a-c9bb-4b08-a800-08e58ca8629a
+### Update a single data
+PATCH http://localhost:3000/courses/1b3d24f0-b629-4fb6-909e-194ee4d03041
 Content-Type: application/json
 
 {
   "name": "Python",
-  "description": "the complete guide of python and django",
+  "description": "the complete guide of python and django"
+}
+
+### update many data
+PUT http://localhost:3000/courses/1b3d24f0-b629-4fb6-909e-194ee4d03041
+Content-Type: application/json
+
+{
+  "name": "Python",
+  "description": "the complete guide of python and django"
 }
 
 ### Delete course
