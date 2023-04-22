@@ -7,3 +7,6 @@ Content-Type: application/json
   "email": "everson@gmail.com",
   "password": "senhadificil"
 }
+
+### Find user by email
+GET http://localhost:3000/user?email=everson@gmail.com
